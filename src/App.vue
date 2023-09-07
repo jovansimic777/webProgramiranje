@@ -1,18 +1,79 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <div>
+      <b-navbar type="dark" variant="dark">
+        <b-navbar-nav>
+
+          <b-nav-item to="/" >Home</b-nav-item>
+          <b-nav-item v-if="token" to="/najcitanije">Najcitanije</b-nav-item>
+          <b-nav-item v-if="token" to="/vest">Vesti</b-nav-item>
+          <b-nav-item v-if="token" to="/kategorija">Kategorije</b-nav-item>
+          <b-nav-item v-if="userId == 1" to="/korisnik">Korisnici</b-nav-item>
+          <b-nav-item v-if="!token" to="/login">Uloguj se</b-nav-item>
+          <b-nav-item v-if="!token" to="/register">Registruj se</b-nav-item>
+          <b-nav-item v-if="token" @click="logout()">Izloguj se</b-nav-item>
+
+        </b-navbar-nav>
+
+
+      </b-navbar>
+    </div>
+    <router-view/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+
+import { mapState, mapMutations } from 'vuex';
 
 export default {
   name: 'App',
-  components: {
-    HelloWorld
+  created(){
+    document.title = "Vesti"
+  },
+
+  computed: {
+    ...mapState([
+      'token',
+      'userId'
+    ])
+  },
+
+  mounted() {
+
+    if (localStorage.token) {
+      this.setToken(localStorage.token);
+    }
+    if(localStorage.userId){
+      this.userId = localStorage.userId;
+    }
+  },
+
+  methods: {
+
+    ...mapMutations([
+      'removeToken',
+      'setToken',
+      'userId',
+      'removeUserId'
+    ]),
+
+
+    logout() {
+      this.removeToken();
+      this.removeUserId();
+      localStorage.user = "";
+      window.location.href = '/'
+    }
+  },
+
+  sockets: {
+    error(err) {
+      console.log(err);
+      alert("AAAAAAAAAAAAAAA");
+    }
   }
+
 }
 </script>
 
@@ -23,6 +84,6 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
+
 </style>
